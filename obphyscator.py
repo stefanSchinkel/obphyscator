@@ -15,13 +15,18 @@ foot = """
     </ins>
     """
 
-def instructions():
-    print """
+def instructions(address,linkText):
+    s = """
     =====================================================
     Include the code snipped below in your HTML replacing 
     the whole <a href=mailto: ... </> part. 
+    The `encrypted` email address is: 
+    {}
+    and the link text is:
+    {}
     =====================================================
     """
+    print s.format(address,linkText)
 
 def cypherMail(mail, link):
     """ `Encrypt` an email address given as a string
@@ -30,7 +35,7 @@ def cypherMail(mail, link):
     :arg email: email address to crypt
     :type email: <str>
 
-    :arg link: link address to crypt
+    :arg link: link text to crypt
     :type link: <str>
 
     :return: JS string to embed in HTML
@@ -74,7 +79,6 @@ if __name__ == '__main__':
     if len(sys.argv) <= 1:
         address = "mail@example.com"
         linkText = "Click to send mail"
-        instructions()
 
     else:
         try:
@@ -86,5 +90,8 @@ if __name__ == '__main__':
             linkText = sys.argv[2]
         except IndexError:
             linkText = address
+
+    #show  instructions
+    instructions(address,linkText)
 
     print cypherMail(address, linkText)
