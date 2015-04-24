@@ -1,32 +1,34 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 
 import numpy as np
 import sys
 
-head = """
-    <ins>
-    <script type="text/javaScript">
-    <!--
-    var a = new Array("""
-foot = """
-    </script>
-    <noscript>
-    <p>Sorry, you need to have JavaScript enabled to get the mail address</p></noscript>
-    </ins>
+HEAD = """
+<ins>
+<span style="display:inline;" id="ophyscator"></span>
+<script type="text/javaScript">
+
+"""
+FOOT = """
+document.getElementById('ophyscator').innerHTML = str;
+</script>
+<noscript>
+<p>Sorry, you need to have JavaScript enabled to get the mail address</p></noscript>
+</ins>
     """
 
-def instructions(address,linkText):
+def instructions(address, linkText):
     s = """
     =====================================================
-    Include the code snipped below in your HTML replacing 
-    the whole <a href=mailto: ... </> part. 
-    The `encrypted` email address is: 
+    Include the code snipped below in your HTML replacing
+    the whole <a href=mailto: ... </> part.
+    The `encrypted` email address is:
     {}
     and the link text is:
     {}
     =====================================================
     """
-    print s.format(address,linkText)
+    print s.format(address, linkText)
 
 def cypherMail(mail, link):
     """ `Encrypt` an email address given as a string
@@ -39,39 +41,40 @@ def cypherMail(mail, link):
     :type link: <str>
 
     :return: JS string to embed in HTML
-    :rtype: <str> 
+    :rtype: <str>
     """
     permMail = list(np.random.permutation(len(mail)))
     permLink = list(np.random.permutation(len(link)))
 
     #incl  intro
-    js = head
+    js = HEAD
     #JS variable for mail
+    js += "var a = new Array("
     for idx in permMail:
         js += "'" + str(mail[idx]) + "',"
-    js = js[:-1] + ");\n\t"
+    js = js[:-1] + ");\n"
 
     #JS variable  for link
     js += "var b = new Array("
     for idx in permLink:
         js += "'" + str(link[idx]) + "',"
-    js = js[:-1] + ");\n\t"
+    js = js[:-1] + ");\n"
 
     # HTML mailto
-    js += "document.write(\"<a href='mailto:\"+"
+    js += "var str = \"<a href='mailto:\"+"
     for idx in range(len(mail)):
         js += "a[" + str(permMail.index(idx)) + "]+"
-    js += "\"'>\");\n\t"
+    js += "\"'>\"+"
 
     # HTML link text
-    js += "document.write("
     for idx in range(len(link)):
         js += "b[" + str(permLink.index(idx)) + "]+"
-    js = js[:-1] + "+\"<\/a>\");//-->\n"
-    
+    # js = js[:-1] + "+\"<\/a>\";\n"
+    js = js[:-1] + '+"<\/a>";\n'
+
     # add closing
-    js += foot
-    
+    js += FOOT
+
     return js
 
 if __name__ == '__main__':
@@ -92,6 +95,6 @@ if __name__ == '__main__':
             linkText = address
 
     #show  instructions
-    instructions(address,linkText)
+    instructions(address, linkText)
 
     print cypherMail(address, linkText)
