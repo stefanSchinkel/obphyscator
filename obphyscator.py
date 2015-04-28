@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+""" ophyscator.py - a simple obfucation tool
+"""
 
 import numpy as np
 import sys
@@ -7,32 +9,39 @@ HEAD = """
 <ins>
 <span style="display:inline;" id="ophyscator"></span>
 <script type="text/javaScript">
-
 """
+
 FOOT = """
 document.getElementById('ophyscator').innerHTML = str;
 </script>
 <noscript>
-<p>Sorry, you need to have JavaScript enabled to get the mail address</p></noscript>
+<p>Sorry, you need to have JavaScript enabled to get the mail address</p>
+</noscript>
 </ins>
-    """
+"""
+
 
 def instructions(address, linkText):
-    s = """
+    """ Print instructions
+    """
+
+    helpString = """
     =====================================================
-    Include the code snipped below in your HTML replacing
-    the whole <a href=mailto: ... </> part.
-    The `encrypted` email address is:
-    {}
-    and the link text is:
-    {}
+    Include the code snipped from <ins> to </ins>in your
+    page replacing <a href=mailto: ... </a> part.
+
+    The `encrypted` email address is: {}
+    and the link text is: {}
     =====================================================
     """
-    print s.format(address, linkText)
+    print helpString.format(address, linkText)
+    print cypherMail(address, linkText)
+
 
 def cypherMail(mail, link):
-    """ `Encrypt` an email address given as a string
-    and return an JS code snippet for embedding in HTML
+    """ 'Encrypt' an email address given as a string
+    and return an HTML/JS code snippet for embedding
+    in a webpage.
 
     :arg email: email address to crypt
     :type email: <str>
@@ -46,10 +55,10 @@ def cypherMail(mail, link):
     permMail = list(np.random.permutation(len(mail)))
     permLink = list(np.random.permutation(len(link)))
 
-    #incl  intro
-    js = HEAD
+    #head
+    js = HEAD + "var a = new Array("
+
     #JS variable for mail
-    js += "var a = new Array("
     for idx in permMail:
         js += "'" + str(mail[idx]) + "',"
     js = js[:-1] + ");\n"
@@ -70,7 +79,7 @@ def cypherMail(mail, link):
     for idx in range(len(link)):
         js += "b[" + str(permLink.index(idx)) + "]+"
     # js = js[:-1] + "+\"<\/a>\";\n"
-    js = js[:-1] + '+"<\/a>";\n'
+    js = js[:-1] + "+\"</a>\";\n"
 
     # add closing
     js += FOOT
@@ -79,22 +88,10 @@ def cypherMail(mail, link):
 
 if __name__ == '__main__':
 
-    if len(sys.argv) <= 1:
-        address = "mail@example.com"
-        linkText = "Click to send mail"
-
+    nArgs = len(sys.argv)
+    if nArgs <= 1:
+        instructions("mail@example.com", "Click to send mail")
+    elif nArgs <= 2:
+        print cypherMail(sys.argv[1], sys.argv[1])
     else:
-        try:
-            address = sys.argv[1]
-        except IndexError:
-            print "interesting"
-            sys.exit(-1)
-        try:
-            linkText = sys.argv[2]
-        except IndexError:
-            linkText = address
-
-    #show  instructions
-    instructions(address, linkText)
-
-    print cypherMail(address, linkText)
+        print cypherMail(sys.argv[1], sys.argv[2])
