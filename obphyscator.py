@@ -94,4 +94,4 @@ if __name__ == '__main__':
     elif nArgs <= 2:
         print cypherMail(sys.argv[1], sys.argv[1])
     else:
-        print cypherMail(sys.argv[1], sys.argv[2])
+        print cypherMail(sys.argv[1], ' '.join(str(x) for x in sys.argv[2:]))
